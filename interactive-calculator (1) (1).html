@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Coverage Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .recommendation-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .recommendation-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .coverage-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .coverage-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .coverage-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .coverage-value {
+            color: #333;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 15px;
+        }
+
+        .status-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gap-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .gap-amount {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .sufficient {
+            color: #4caf50;
+        }
+
+        .insufficient {
+            color: #f44336;
+        }
+
+        .status-icon {
+            font-size: 1.5em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Insurance Coverage Calculator</h1>
+        <p class="subtitle">Check if you have adequate insurance protection</p>
+
+        <div class="input-group">
+            <label for="income">Your Annual Income ($)</label>
+            <input type="number" id="income" placeholder="e.g., 80000" min="0" step="1000">
+        </div>
+
+        <div class="input-group">
+            <label for="deathCoverage">Current Death Coverage ($)</label>
+            <input type="number" id="deathCoverage" placeholder="e.g., 500000" min="0" step="1000">
+        </div>
+
+        <div class="input-group">
+            <label for="ciCoverage">Current Critical Illness Coverage ($)</label>
+            <input type="number" id="ciCoverage" placeholder="e.g., 200000" min="0" step="1000">
+        </div>
+
+        <div class="input-group">
+            <label for="annualPremium">Total Annual Insurance Premiums ($)</label>
+            <input type="number" id="annualPremium" placeholder="e.g., 5000" min="0" step="100">
+        </div>
+
+        <div class="input-group">
+            <label style="margin-bottom: 15px;">Additional Coverage</label>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: normal;">
+                    <input type="checkbox" id="hasPA" style="width: auto; cursor: pointer; transform: scale(1.3);">
+                    <span>I have Personal Accident coverage</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: normal;">
+                    <input type="checkbox" id="hasHospital" style="width: auto; cursor: pointer; transform: scale(1.3);">
+                    <span>I have Hospitalization coverage</span>
+                </label>
+            </div>
+        </div>
+
+        <button onclick="calculateCoverage()">Calculate Coverage</button>
+
+        <div id="results" class="results">
+            <div class="recommendation-card">
+                <h3>Recommended Coverage</h3>
+                <div class="coverage-row">
+                    <span class="coverage-label">Death Coverage:</span>
+                    <span class="coverage-value" id="recDeath">$0</span>
+                </div>
+                <div class="coverage-row">
+                    <span class="coverage-label">Critical Illness Coverage:</span>
+                    <span class="coverage-value" id="recCI">$0</span>
+                </div>
+            </div>
+
+            <div class="status-card" id="deathStatus">
+                <h3>
+                    <span class="status-icon" id="deathIcon">✓</span>
+                    Death Coverage Status
+                </h3>
+                <div class="gap-indicator">
+                    <span class="coverage-label">Your Coverage:</span>
+                    <span class="coverage-value" id="currentDeath">$0</span>
+                </div>
+                <div class="gap-indicator">
+                    <span class="coverage-label" id="deathGapLabel">Coverage Gap:</span>
+                    <span class="gap-amount" id="deathGap">$0</span>
+                </div>
+            </div>
+
+            <div class="status-card" id="ciStatus">
+                <h3>
+                    <span class="status-icon" id="ciIcon">✓</span>
+                    Critical Illness Status
+                </h3>
+                <div class="gap-indicator">
+                    <span class="coverage-label">Your Coverage:</span>
+                    <span class="coverage-value" id="currentCI">$0</span>
+                </div>
+                <div class="gap-indicator">
+                    <span class="coverage-label" id="ciGapLabel">Coverage Gap:</span>
+                    <span class="gap-amount" id="ciGap">$0</span>
+                </div>
+            </div>
+
+            <div class="status-card" id="premiumStatus">
+                <h3>
+                    <span class="status-icon" id="premiumIcon">✓</span>
+                    Premium Affordability
+                </h3>
+                <div class="gap-indicator">
+                    <span class="coverage-label">Recommended Max Premium:</span>
+                    <span class="coverage-value" id="maxPremium">$0</span>
+                </div>
+                <div class="gap-indicator">
+                    <span class="coverage-label">Your Annual Premium:</span>
+                    <span class="coverage-value" id="currentPremium">$0</span>
+                </div>
+                <div class="gap-indicator">
+                    <span class="coverage-label" id="premiumDiffLabel">Difference:</span>
+                    <span class="gap-amount" id="premiumDiff">$0</span>
+                </div>
+            </div>
+
+            <div class="status-card" id="paStatus">
+                <h3>
+                    <span class="status-icon" id="paIcon">✓</span>
+                    Personal Accident Coverage
+                </h3>
+                <div class="gap-indicator">
+                    <span class="coverage-label" id="paLabel">Status:</span>
+                    <span class="gap-amount" id="paMessage">Not checked</span>
+                </div>
+            </div>
+
+            <div class="status-card" id="hospitalStatus">
+                <h3>
+                    <span class="status-icon" id="hospitalIcon">✓</span>
+                    Hospitalization Coverage
+                </h3>
+                <div class="gap-indicator">
+                    <span class="coverage-label" id="hospitalLabel">Status:</span>
+                    <span class="gap-amount" id="hospitalMessage">Not checked</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>About these recommendations:</strong><br>
+                Death coverage is calculated at 9x your annual income to provide long-term financial security for your dependents.<br>
+                Critical illness coverage is calculated at 4x your annual income to cover medical expenses and income loss during recovery.<br>
+                Premium affordability is based on 15% of annual income - spending more may strain your finances.<br>
+                Personal Accident and Hospitalization coverage are essential protections that everyone should have.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatCurrency(amount) {
+            return '$' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+
+        function calculateCoverage() {
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const deathCoverage = parseFloat(document.getElementById('deathCoverage').value) || 0;
+            const ciCoverage = parseFloat(document.getElementById('ciCoverage').value) || 0;
+            const annualPremium = parseFloat(document.getElementById('annualPremium').value) || 0;
+            const hasPA = document.getElementById('hasPA').checked;
+            const hasHospital = document.getElementById('hasHospital').checked;
+
+            if (income <= 0) {
+                alert('Please enter a valid annual income');
+                return;
+            }
+
+            // Calculate recommended coverage
+            const recDeath = income * 9;
+            const recCI = income * 4;
+            const maxPremium = income * 0.15;
+
+            // Calculate gaps
+            const deathGap = recDeath - deathCoverage;
+            const ciGap = recCI - ciCoverage;
+            const premiumDiff = annualPremium - maxPremium;
+
+            // Update recommended coverage
+            document.getElementById('recDeath').textContent = formatCurrency(recDeath);
+            document.getElementById('recCI').textContent = formatCurrency(recCI);
+
+            // Update current coverage
+            document.getElementById('currentDeath').textContent = formatCurrency(deathCoverage);
+            document.getElementById('currentCI').textContent = formatCurrency(ciCoverage);
+
+            // Update death coverage status
+            const deathStatus = document.getElementById('deathStatus');
+            const deathIcon = document.getElementById('deathIcon');
+            const deathGapElem = document.getElementById('deathGap');
+            const deathGapLabel = document.getElementById('deathGapLabel');
+
+            if (deathGap <= 0) {
+                deathStatus.style.borderLeft = '5px solid #4caf50';
+                deathIcon.textContent = '✓';
+                deathIcon.className = 'status-icon sufficient';
+                deathGapElem.textContent = 'Adequate Coverage!';
+                deathGapElem.className = 'gap-amount sufficient';
+                deathGapLabel.textContent = 'Status:';
+            } else {
+                deathStatus.style.borderLeft = '5px solid #f44336';
+                deathIcon.textContent = '⚠';
+                deathIcon.className = 'status-icon insufficient';
+                deathGapElem.textContent = formatCurrency(deathGap);
+                deathGapElem.className = 'gap-amount insufficient';
+                deathGapLabel.textContent = 'Coverage Gap:';
+            }
+
+            // Update CI coverage status
+            const ciStatus = document.getElementById('ciStatus');
+            const ciIcon = document.getElementById('ciIcon');
+            const ciGapElem = document.getElementById('ciGap');
+            const ciGapLabel = document.getElementById('ciGapLabel');
+
+            if (ciGap <= 0) {
+                ciStatus.style.borderLeft = '5px solid #4caf50';
+                ciIcon.textContent = '✓';
+                ciIcon.className = 'status-icon sufficient';
+                ciGapElem.textContent = 'Adequate Coverage!';
+                ciGapElem.className = 'gap-amount sufficient';
+                ciGapLabel.textContent = 'Status:';
+            } else {
+                ciStatus.style.borderLeft = '5px solid #f44336';
+                ciIcon.textContent = '⚠';
+                ciIcon.className = 'status-icon insufficient';
+                ciGapElem.textContent = formatCurrency(ciGap);
+                ciGapElem.className = 'gap-amount insufficient';
+                ciGapLabel.textContent = 'Coverage Gap:';
+            }
+
+            // Update premium status
+            const premiumStatus = document.getElementById('premiumStatus');
+            const premiumIcon = document.getElementById('premiumIcon');
+            const premiumDiffElem = document.getElementById('premiumDiff');
+            const premiumDiffLabel = document.getElementById('premiumDiffLabel');
+            
+            document.getElementById('maxPremium').textContent = formatCurrency(maxPremium);
+            document.getElementById('currentPremium').textContent = formatCurrency(annualPremium);
+
+            if (annualPremium === 0) {
+                premiumStatus.style.borderLeft = '5px solid #2196f3';
+                premiumIcon.textContent = 'ℹ';
+                premiumIcon.className = 'status-icon';
+                premiumIcon.style.color = '#2196f3';
+                premiumDiffElem.textContent = 'No premium entered';
+                premiumDiffElem.className = 'gap-amount';
+                premiumDiffElem.style.color = '#666';
+                premiumDiffLabel.textContent = 'Status:';
+            } else if (premiumDiff <= 0) {
+                premiumStatus.style.borderLeft = '5px solid #4caf50';
+                premiumIcon.textContent = '✓';
+                premiumIcon.className = 'status-icon sufficient';
+                premiumDiffElem.textContent = 'Within Budget!';
+                premiumDiffElem.className = 'gap-amount sufficient';
+                premiumDiffLabel.textContent = 'Status:';
+            } else {
+                premiumStatus.style.borderLeft = '5px solid #f44336';
+                premiumIcon.textContent = '⚠';
+                premiumIcon.className = 'status-icon insufficient';
+                premiumDiffElem.textContent = formatCurrency(premiumDiff) + ' over budget';
+                premiumDiffElem.className = 'gap-amount insufficient';
+                premiumDiffLabel.textContent = 'Overpayment:';
+            }
+
+            // Update Personal Accident status
+            const paStatus = document.getElementById('paStatus');
+            const paIcon = document.getElementById('paIcon');
+            const paMessage = document.getElementById('paMessage');
+
+            if (hasPA) {
+                paStatus.style.borderLeft = '5px solid #4caf50';
+                paIcon.textContent = '✓';
+                paIcon.className = 'status-icon sufficient';
+                paMessage.textContent = 'Coverage in place';
+                paMessage.className = 'gap-amount sufficient';
+            } else {
+                paStatus.style.borderLeft = '5px solid #f44336';
+                paIcon.textContent = '⚠';
+                paIcon.className = 'status-icon insufficient';
+                paMessage.textContent = 'Coverage Gap - Not covered';
+                paMessage.className = 'gap-amount insufficient';
+            }
+
+            // Update Hospitalization status
+            const hospitalStatus = document.getElementById('hospitalStatus');
+            const hospitalIcon = document.getElementById('hospitalIcon');
+            const hospitalMessage = document.getElementById('hospitalMessage');
+
+            if (hasHospital) {
+                hospitalStatus.style.borderLeft = '5px solid #4caf50';
+                hospitalIcon.textContent = '✓';
+                hospitalIcon.className = 'status-icon sufficient';
+                hospitalMessage.textContent = 'Coverage in place';
+                hospitalMessage.className = 'gap-amount sufficient';
+            } else {
+                hospitalStatus.style.borderLeft = '5px solid #f44336';
+                hospitalIcon.textContent = '⚠';
+                hospitalIcon.className = 'status-icon insufficient';
+                hospitalMessage.textContent = 'Coverage Gap - Not covered';
+                hospitalMessage.className = 'gap-amount insufficient';
+            }
+
+            // Show results
+            document.getElementById('results').classList.add('show');
+            
+            // Smooth scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Allow Enter key to calculate
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateCoverage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
